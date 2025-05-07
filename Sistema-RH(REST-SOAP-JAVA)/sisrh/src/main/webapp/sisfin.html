@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.js"></script>
+  <style>
+    body {
+      font: normal 12px Verdana, Arial, sans-serif;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+
+  <h1> Sistema Financeiro (SISFIN) </h1>
+  <h2> Módulo de Integração ao SISRH </h2>
+
+  Usuário:
+  <input v-model="usuario" placeholder="Usuário">
+
+  Senha:
+  <input v-model="senha" placeholder="Senha">
+  <button v-on:click="login">Login</button>
+
+  <hr/>
+
+  Token JWT:
+  <div style="color: blue; width: 400px; word-wrap: break-word">
+    {{ tokenJWT }}
+  </div>
+
+  <hr/>
+
+  <h3>Folha de Pagamento</h3>
+  <button v-on:click="listarEmpregados">Calcular Folha</button>
+
+  <h3>Listar Empregados Ativos</h3>
+  <button v-on:click="listarEmpregadosAtivos">Listar Ativos</button>
+  
+  <h3>Listar Usuario</h3>
+  <button v-on:click="listarUsuario">Listar Usuario</button>
+
+  <div style="color: red">{{ errorMessage }}</div>
+
+  <!-- FOLHA DE PAGAMENTO -->
+  <div v-if="tipoLista === 'folha' && totalFolha > 0">
+    <hr/>
+    <div style="color: blue">Total de Empregados: {{ totalEmpregados }}</div>
+    <div style="color: blue">Folha de Pagamento: R$ {{ totalFolha }},00</div>
+
+    <hr/>
+    <h3>Lista de Empregados</h3>
+    <ul>
+      <li v-for="empregado in listaEmpregado" :key="empregado.matricula">
+        {{ empregado.nome }} : R$ {{ empregado.salario }},00
+      </li>
+    </ul>
+    <hr/>
+  </div>
+
+  <!-- EMPREGADOS ATIVOS -->
+  <div v-if="tipoLista === 'ativos' && listaEmpregado.length > 0">
+    <hr/>
+    <h3 style="color: green">Empregados Ativos</h3>
+    <div style="color: green">Total de Ativos: {{ totalEmpregados }}</div>
+    <ul>
+      <li v-for="empregado in listaEmpregado" :key="empregado.matricula">
+        {{ empregado.nome }} (Matricula: {{ empregado.matricula }})
+      </li>
+    </ul>
+    <hr/>
+  </div>
+  
+  <!-- LISTAR USUARIOS -->
+  <div v-if="tipoLista === 'usuarios' && listaUsuario.length > 0">
+    <hr/>
+    <h3 style="color: green">Usuarios</h3>
+    <div style="color: green">Total de Usuario: {{ totalUsuario }}</div>
+    <ul>
+      <li v-for="usuario in listaUsuario" :key="usuario.matricula">
+        {{ usuario.nome }} (Matricula: {{ usuario.matricula }})
+      </li>
+    </ul>
+    <hr/>
+  </div>
+
+</div>
+
+<script>
+  var app = new Vue({
+    el: '#app',
+    data: {
+      url: 'http://localhost:8080/sisrh/rest',
+      usuario: 'sisfin',
+      senha: '123456',
+      tokenJWT: 'vazio',
+      errorMessage: "",
+      listaEmpregado: [],
+  		listaUsuario:[],
+      tipoLista: ""  
+    },
+
+    methods: {
+      login: function () {
+        this.tokenJWT = 'vazio';
+        this.errorMessage = "";
+        this.listaEmpregado = [];
+        this.listaUsuario = [];
+        const login = { usuario: this.usuario, senha: this.senha };
+        axios.post(this.url + '/loginunico/jwt', login)
+          .then(response => this.tokenJWT = response.data)
+          .catch(error => {
+            this.errorMessage = error.message;
+            console.error("Erro no login!", error);
+          });
+      },
+
+      listarEmpregados: function () {
+        this.errorMessage = "";
+        axios.get(this.url + '/empregado', {
+          headers: { jwt: this.tokenJWT }
+        })
+        .then(response => {
+          this.listaEmpregado = response.data;
+          this.tipoLista = 'folha';
+        })
+        .catch(error => {
+          this.errorMessage = error.message;
+          console.error("Erro ao listar empregados!", error);
+        });
+      },
+
+      listarEmpregadosAtivos: function () {
+        this.errorMessage = "";
+        axios.get(this.url + '/empregado', {
+          headers: { jwt: this.tokenJWT }
+        })
+        .then(response => {
+          this.listaEmpregadoAtivo = response.data;
+          this.tipoLista = 'ativos';
+        })
+        .catch(error => {
+          this.errorMessage = error.message;
+          console.error("Erro ao listar ativos!", error);
+        });
+      },
+    
+    listarUsuario: function () {
+        this.errorMessage = "";
+        axios.get(this.url + '/usuario', {
+          headers: { jwt: this.tokenJWT }
+        })
+        .then(response => {
+          this.listaUsuario= response.data
+          this.tipoLista = 'usuarios';
+        })
+        .catch(error => {
+          this.errorMessage = error.message;
+          console.error("Erro ao listar Usuarios!", error);
+        });
+      }
+    },
+
+    computed: {
+      totalFolha: function () {
+        if (this.tipoLista !== 'folha') return 0;
+        return this.listaEmpregado.reduce((total, emp) => total + emp.salario, 0);
+      },
+
+      totalEmpregados: function () {
+        return this.listaEmpregado.length;
+      },
+      
+      totalUsuario: function () {
+          return this.listaUsuario.length;
+        }
+      
+      
+    }
+  });
+</script>
+
+</body>
+</html>
