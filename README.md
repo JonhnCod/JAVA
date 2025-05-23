@@ -1,6 +1,4 @@
-Claro! Aqui está o conteúdo pronto para copiar e colar no seu `README.md`:
 
-````markdown
 # Sistema RH (REST-SOAP-JAVA) 🧑‍💼
 
 Este repositório contém um Sistema de Recursos Humanos (RH) desenvolvido em Java, utilizando uma arquitetura modular com serviços RESTful e SOAP. O projeto é construído com Maven e é projetado para ser executado em um servidor Apache Tomcat.
