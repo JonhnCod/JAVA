@@ -28,9 +28,6 @@ Este repositório contém um Sistema de Recursos Humanos (RH) desenvolvido em Ja
    - Banco de dados relacional disponível
 
 2. **Clonar o Repositório**:
-   ```bash
-   git clone https://github.com/JonhnCod/JAVA.git
-````
 
 3. **Importar o Projeto**:
 
@@ -72,4 +69,5 @@ Este projeto está licenciado sob a Licença MIT. Consulte o arquivo [LICENSE](h
 
 Se quiser, posso te ajudar a colocar ele direto no repositório também.
 ```
+
 
