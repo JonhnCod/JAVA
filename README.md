@@ -65,9 +65,6 @@ Contribuições são bem-vindas! Se você deseja melhorar alguma funcionalidade 
 
 Este projeto está licenciado sob a Licença MIT. Consulte o arquivo [LICENSE](https://github.com/JonhnCod/JAVA/blob/main/LICENSE) para mais detalhes.
 
-```
 
-Se quiser, posso te ajudar a colocar ele direto no repositório também.
-```
 
 
